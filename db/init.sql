@@ -10,13 +10,11 @@ CREATE TYPE transaction_type AS ENUM ('expense', 'income');
 -- ---------------------------------------------------------------------------
 CREATE TABLE categories (
     id          SERIAL PRIMARY KEY,
-    name        VARCHAR(100) NOT NULL,
+    name        VARCHAR(50) NOT NULL,
     type        transaction_type NOT NULL,
     description TEXT,
-    is_active   BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    CONSTRAINT categories_name_type_unique UNIQUE (name, type)
+    CONSTRAINT categories_name_type_unique UNIQUE (naeme, type)
 );
 
 CREATE INDEX idx_categories_type ON categories (type) WHERE is_active = TRUE;
@@ -31,14 +29,9 @@ CREATE TABLE transactions (
     type               transaction_type NOT NULL,
     category_id        INTEGER NOT NULL REFERENCES categories (id),
     amount             NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
-    currency           CHAR(3) NOT NULL DEFAULT 'EUR',
     description        TEXT,
     transaction_date   DATE NOT NULL,
-    recorded_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    source             VARCHAR(50) NOT NULL DEFAULT 'telegram',
-    external_reference VARCHAR(255),
 
-    CONSTRAINT transactions_currency_uppercase CHECK (currency = UPPER(currency))
 );
 
 CREATE INDEX idx_transactions_transaction_date ON transactions (transaction_date);
@@ -58,7 +51,6 @@ CREATE TABLE monthly_summaries (
     id                        SERIAL PRIMARY KEY,
     year                      SMALLINT NOT NULL,
     month                     SMALLINT NOT NULL CHECK (month BETWEEN 1 AND 12),
-    currency                  CHAR(3) NOT NULL DEFAULT 'EUR',
 
     total_income              NUMERIC(14, 2) NOT NULL DEFAULT 0,
     total_expenses            NUMERIC(14, 2) NOT NULL DEFAULT 0,
@@ -87,14 +79,12 @@ CREATE TABLE category_monthly_totals (
     year               SMALLINT NOT NULL,
     month              SMALLINT NOT NULL CHECK (month BETWEEN 1 AND 12),
     category_id        INTEGER NOT NULL REFERENCES categories (id),
-    currency           CHAR(3) NOT NULL DEFAULT 'EUR',
 
     total_amount       NUMERIC(14, 2) NOT NULL DEFAULT 0,
     transaction_count  INTEGER NOT NULL DEFAULT 0,
     computed_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    PRIMARY KEY (year, month, category_id, currency),
-    CONSTRAINT category_monthly_totals_currency_uppercase CHECK (currency = UPPER(currency))
+    PRIMARY KEY (year, month, category_id),
 );
 
 CREATE INDEX idx_category_monthly_totals_period ON category_monthly_totals (year, month);
