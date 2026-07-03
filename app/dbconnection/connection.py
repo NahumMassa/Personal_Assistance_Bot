@@ -1,17 +1,20 @@
 from datetime import datetime
 
-from sqlalchemy.ext.declarative import declartive_base
-
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Float
+from sqlalchemy.orm import sessionmaker, declarative_base 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declartive_base
-
 
 #DB connection <motor>://<user>:<password>@<host>:<port>/<database>
-engine = create_engine('postgresql://postgres:Admin123@localhost:5432/postgres')
-Base = declartive_base()
 
-class transaction(Base):
+#connection pool
+engine = create_engine('postgresql://postgres:postgres@localhost:5432/personal_finance') 
+
+
+Base = declarative_base() #to create models, with the heritage of Base class
+Session = sessionmaker(engine) #a session is a workspace for the db
+session = Session()
+
+class Transaction(Base):
     __tablename__ = "transactions"
 
     id = Column(Integer, primary_key=True)
@@ -21,5 +24,10 @@ class transaction(Base):
     description = Column(String, nullable=False)
     transaction_date = Column(DateTime(), default=datetime.now(), nullable=False)
 
-    __str__ = lambda self: f"{self.description}: {self.amount}, {self.type}, {self.transaction_date}"
+    __str__ = lambda self: f"Description: {self.description}, Amount: {self.amount}, Type: {self.type}, Date: {self.transaction_date}"
 
+if __name__ == "__main__":
+    print('Testing DB connection')
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    
