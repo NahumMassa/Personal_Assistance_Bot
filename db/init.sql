@@ -14,10 +14,10 @@ CREATE TABLE categories (
     type        transaction_type NOT NULL,
     description TEXT,
 
-    CONSTRAINT categories_name_type_unique UNIQUE (naeme, type)
+    CONSTRAINT categories_name_type_unique UNIQUE (name, type)
 );
 
-CREATE INDEX idx_categories_type ON categories (type) WHERE is_active = TRUE;
+CREATE INDEX idx_categories_type ON categories (type);
 
 -- ---------------------------------------------------------------------------
 -- transactions
@@ -30,7 +30,7 @@ CREATE TABLE transactions (
     category_id        INTEGER NOT NULL REFERENCES categories (id),
     amount             NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
     description        TEXT,
-    transaction_date   DATE NOT NULL,
+    transaction_date   DATE NOT NULL
 
 );
 
@@ -65,8 +65,7 @@ CREATE TABLE monthly_summaries (
 
     computed_at               TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    CONSTRAINT monthly_summaries_period_currency_unique UNIQUE (year, month, currency),
-    CONSTRAINT monthly_summaries_currency_uppercase CHECK (currency = UPPER(currency))
+    CONSTRAINT monthly_summaries_period_unique UNIQUE (year, month)
 );
 
 CREATE INDEX idx_monthly_summaries_period ON monthly_summaries (year, month);
@@ -84,7 +83,7 @@ CREATE TABLE category_monthly_totals (
     transaction_count  INTEGER NOT NULL DEFAULT 0,
     computed_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    PRIMARY KEY (year, month, category_id),
+    PRIMARY KEY (year, month, category_id)
 );
 
 CREATE INDEX idx_category_monthly_totals_period ON category_monthly_totals (year, month);

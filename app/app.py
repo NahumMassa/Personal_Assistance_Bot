@@ -1,10 +1,11 @@
+# pyrefly: ignore [missing-import]
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-
 from dotenv import load_dotenv
 from os import getenv
+from app.handlers.handlers import register_transaction_telegram
+from app.handlers.handlers import register_category_telegram
 
-import handlers as hd
 
 load_dotenv()
 
@@ -21,7 +22,7 @@ async def say_hello(update: Update, context: ContextTypes.DEFAULT_TYPE):
 print("Bot is running...")
 app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
 app.add_handler(CommandHandler("hello", say_hello))
-app.add_handler(CommandHandler("expense", hd.register_expense))
-app.add_handler(CommandHandler("income", hd.register_income))
+app.add_handler(CommandHandler("transaction", register_transaction_telegram))
+app.add_handler(CommandHandler("add_category", register_category_telegram))
 
 app.run_polling(allowed_updates=Update.ALL_TYPES)

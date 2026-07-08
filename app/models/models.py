@@ -6,8 +6,9 @@ from sqlalchemy import create_engine
 
 #DB connection <motor>://<user>:<password>@<host>:<port>/<database>
 
+
 #connection pool
-engine = create_engine('postgresql://postgres:postgres@localhost:5432/personal_finance') 
+engine = create_engine('postgresql://postgres:postgres@localhost:5432/assistant_finance_bot') 
 
 
 Base = declarative_base() #to create models, with the heritage of Base class
@@ -22,9 +23,24 @@ class Transaction(Base):
     category_id = Column(Integer, nullable=False)
     amount = Column(Float, nullable=False)
     description = Column(String, nullable=False)
-    transaction_date = Column(DateTime(), default=datetime.now(), nullable=False)
+    transaction_date = Column(DateTime(), default=datetime.now, nullable=False)
 
     __str__ = lambda self: f"Description: {self.description}, Amount: {self.amount}, Type: {self.type}, Date: {self.transaction_date}"
+
+class Category(Base):
+    __tablename__ = "categories"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    type = Column(Integer, nullable=False)
+    description = Column(String, nullable=True)
+
+    __str__ = lambda self: f"Name: {self.name}, Type: {self.type}, Description: {self.description}"
+    
+    
+
+
+
+
 
 if __name__ == "__main__":
     print('Testing DB connection')

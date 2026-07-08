@@ -1,3 +1,2 @@
-from .handlers import register_expense
-from .handlers import register_income
-
+from .handlers import register_transaction_telegram
+from .handlers import register_category_telegram
