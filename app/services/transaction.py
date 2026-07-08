@@ -16,16 +16,6 @@ def register_transaction(category_name: str, amount: float, description: str):
     Returns:
         A message indicating whether the transaction was registered successfully or not.
     """
-    type = ""
-    #expense or income?
-    if amount == 0:
-        return "Amount cannot be zero"
-    
-    if amount < 0:
-        type = "expense"
-        amount = abs(amount)
-    else:
-        type = "income"
 
     #validate category exists
     category = session.query(Category).where(Category.name == category_name).one_or_none()
@@ -61,10 +51,18 @@ def register_category(category_name:str, category_type: str, description: str):
         A message indicating whether the category was registered successfully or not.
     """
     if category_name is None:
-        return "Category name cannot be empty"
+        raise ValueError("Category name cannot be empty")
     
     if category_type not in ["expense", "income"]:
-        return "Category type must be expense or income"
+        raise ValueError("Category type must be expense or income")
+        
+    if description is None:
+        description = "No description was provided"
+    
+    #check if category exists
+    category = session.query(Category).where(Category.name == category_name).one_or_none()
+    if category is not None:
+        raise ValueError("Category already exists")
     
     try:
         new_category = Category(
