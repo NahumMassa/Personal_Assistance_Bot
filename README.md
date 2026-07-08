@@ -1,4 +1,4 @@
-# Personal assistant and fiance bot
+# Personal assistant and finance bot
 
 Main Objective: Create a reliable way to register financial movements to manage personal finances
 
